@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仵世荣</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #ff69b4, #87CEEB);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+        }
+
+        .main-text {
+            font-size: 80px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 2s ease forwards;
+            font-weight: bold;
+            letter-spacing: 15px;
+            position: relative;
+            transition: all 0.8s ease;
+            filter: blur(0);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .emoji {
+            position: absolute;
+            pointer-events: none;
+            animation: float 1s ease-out forwards;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* 修改文字变化动画 */
+        @keyframes textChange {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+            50% {
+                transform: scale(0.8);
+                opacity: 0;
+                filter: blur(10px);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        /* 修改主文字样式 */
+        .main-text {
+            font-size: 80px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 2s ease forwards;
+            font-weight: bold;
+            letter-spacing: 15px;
+            position: relative;
+            transition: all 0.8s ease;
+            filter: blur(0);
+        }
+
+        /* 修改文字变化后的样式 */
+        .main-text.changed {
+            animation: textChange 1.5s ease forwards;
+            font-size: 75px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 15px rgba(255,105,180,0.8);
+            color: #fff;
+        }
+
+        /* 添加掉落的爱心样式 */
+        .emoji.falling {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            will-change: transform;  // 优化动画性能
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-text">仵世荣</div>
+    </div>
+
+    <script>
+        // 鼠标移动时产生emoji效果
+        document.addEventListener('mousemove', function(e) {
+            if(Math.random() < 0.1) {
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji';
+                emoji.textContent = '✨';
+                emoji.style.left = (e.pageX - 10) + 'px';
+                emoji.style.top = (e.pageY - 10) + 'px';
+                emoji.style.fontSize = '20px';
+                document.body.appendChild(emoji);
+
+                emoji.addEventListener('animationend', function() {
+                    emoji.remove();
+                });
+            }
+        });
+
+        // 添加点击计数
+        let clickCount = 0;
+        
+        // 添加爱心emoji数组
+        const loveEmojis = ['❤️', '💖', '💝', '💕', '💗', '💓', '💘', '💞'];
+        let isDropping = false;  // 控制掉落状态
+
+        // 创建掉落的爱心
+        function createFallingHeart() {
+            if (!isDropping) return;
+
+            const heart = document.createElement('div');
+            heart.className = 'emoji falling';
+            heart.textContent = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = '-50px';
+            heart.style.fontSize = (20 + Math.random() * 20) + 'px';  // 随机大小
+            heart.style.opacity = 0.7 + Math.random() * 0.3;  // 随机透明度
+            document.body.appendChild(heart);
+
+            // 设置掉落动画
+            const duration = 3000 + Math.random() * 2000;  // 随机掉落时间
+            const rotation = -30 + Math.random() * 60;  // 随机旋转角度
+            const horizontalMove = -50 + Math.random() * 100;  // 随机水平移动
+
+            heart.animate([
+                { transform: 'translate(0, 0) rotate(0deg)' },
+                { transform: `translate(${horizontalMove}px, ${window.innerHeight + 100}px) rotate(${rotation}deg)` }
+            ], {
+                duration: duration,
+                easing: 'ease-in'
+            }).onfinish = () => heart.remove();
+        }
+
+        // 修改点击文字效果
+        document.querySelector('.main-text').addEventListener('click', function(e) {
+            // 创建 emoji 效果
+            const poop = document.createElement('div');
+            poop.className = 'emoji';
+            poop.textContent = '💩';
+            poop.style.left = e.pageX + 'px';
+            poop.style.top = e.pageY + 'px';
+            poop.style.fontSize = '30px';
+            document.body.appendChild(poop);
+
+            poop.addEventListener('animationend', function() {
+                poop.remove();
+            });
+
+            // 增加点击计数
+            clickCount++;
+            
+            // 检查是否达到7次点击
+            if (clickCount === 7) {
+                const mainText = document.querySelector('.main-text');
+                mainText.style.animation = 'textChange 1.5s ease forwards';
+                mainText.classList.add('changed');
+                
+                setTimeout(() => {
+                    mainText.textContent = '❤️仵世荣&姚斐卿❤️';
+                    
+                    // 开始持续掉落爱心
+                    isDropping = true;
+                    setInterval(createFallingHeart, 300);  // 每300ms创建一个新的爱心
+                    
+                    // 初始爱心爆发效果
+                    for(let i = 0; i < 15; i++) {
+                        setTimeout(() => {
+                            const heart = document.createElement('div');
+                            heart.className = 'emoji';
+                            heart.textContent = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+                            heart.style.left = Math.random() * window.innerWidth + 'px';
+                            heart.style.top = Math.random() * window.innerHeight + 'px';
+                            heart.style.fontSize = '30px';
+                            heart.style.animation = 'float 1.5s ease-out forwards';
+                            document.body.appendChild(heart);
+
+                            heart.addEventListener('animationend', function() {
+                                heart.remove();
+                            });
+                        }, i * 100);
+                    }
+                }, 750);
+            }
+        });
+    </script>
+</body>
+</html>
